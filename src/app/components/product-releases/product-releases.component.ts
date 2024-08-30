@@ -15,30 +15,20 @@ import { ReleaseService } from '../../services/release.service';
 export class ProductReleasesComponent implements OnInit {
   projectIds = ['CIS', 'MC', 'CC', 'NSBL', 'PUBS'];
   products: { [key: string]: Release[] } = {};
-  filteredProducts: { [key: string]: Release[] } = {};
   dependencies: { [projectId: string]: Dependencies } = {};
   newDependency: { [key: string]: Dependency } = {};
-  filterText: { [key: string]: string } = {};
 
   constructor(private releaseService: ReleaseService) {}
 
   ngOnInit() {
     this.loadReleases();
     this.loadDependencies();
-    this.initializeFilterText();
-  }
-
-  initializeFilterText() {
-    this.projectIds.forEach((projectId) => {
-      this.filterText[projectId] = '';
-    });
   }
 
   loadReleases() {
     this.projectIds.forEach((projectId) => {
       this.releaseService.getReleases(projectId).subscribe((releases) => {
         this.products[projectId] = releases;
-        this.filteredProducts[projectId] = releases; // Initialize filtered products
         // Initialize newDependency for each release
         releases.forEach((release) => {
           if (!this.newDependency[release.id]) {
@@ -124,15 +114,5 @@ export class ProductReleasesComponent implements OnInit {
           this.dependencies[projectId][releaseId]
         );
       });
-  }
-
-  filterReleases(projectId: string) {
-    const filterValue = this.filterText[projectId].toLowerCase();
-    this.filteredProducts[projectId] = this.products[projectId].filter(
-      (release) =>
-        release.name.toLowerCase().includes(filterValue) ||
-        release.description.toLowerCase().includes(filterValue) ||
-        release.releaseDate.toLowerCase().includes(filterValue)
-    );
   }
 }
