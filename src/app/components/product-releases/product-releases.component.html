@@ -1,0 +1,50 @@
+<div *ngFor="let projectId of projectIds" class="project-container">
+  <h2>{{ projectId }}</h2>
+  
+  <details>
+    <div *ngFor="let release of products[projectId]" class="release-container">
+      <details>
+        <summary>Release: {{ release?.name }}</summary>
+        <p>Start Date: {{ release?.startDate | date }}</p>
+        <p>Release Date: {{ release?.releaseDate | date }}</p>
+        <p>Description: {{ release?.description }}</p>
+        
+        <!-- New section for dependencies -->
+        <div class="dependencies-container">
+          <h4>Dependencies:</h4>
+          <ul *ngIf="dependencies[projectId] && dependencies[projectId][release.id]">
+            <li *ngFor="let dep of dependencies[projectId][release.id]">
+              {{ dep.project }} - {{ dep.release }}
+              <button (click)="removeDependency(projectId, release.id, dep)" class="remove-dependency-btn">❌</button>
+            </li>
+          </ul>
+          <p *ngIf="!dependencies[projectId] || !dependencies[projectId][release.id]">No dependencies</p>
+        </div>
+
+        <!-- Add dependency form -->
+        <div class="add-dependency-form">
+          <h4>Add Dependency</h4>
+          <form (ngSubmit)="addDependency(projectId, release.id)" class="horizontal-form">
+            <div class="form-group">
+              <label for="project">Project:</label>
+              <select id="project" [(ngModel)]="newDependency[release.id].project" name="project" required>
+                <option value="" disabled selected>Select a project</option>
+                <option *ngFor="let proj of projectIds" [value]="proj">{{ proj }}</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="release">Release:</label>
+              <select id="release" [(ngModel)]="newDependency[release.id].release" name="release" required>
+                <option value="">Select a release</option>
+                <option *ngFor="let rel of products[newDependency[release.id].project]" [value]="rel.name">{{ rel.name }}</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <button type="submit">Add Dependency</button>
+            </div>
+          </form>
+        </div>
+      </details>
+    </div>
+  </details>
+</div>
