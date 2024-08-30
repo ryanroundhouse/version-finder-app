@@ -1,6 +1,6 @@
 export interface Dependency {
   project: string;
-  release: string;
+  version: string;
   dependencyReleaseId: string;
 }
 

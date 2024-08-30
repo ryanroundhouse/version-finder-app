@@ -34,7 +34,7 @@ export class ProductReleasesComponent implements OnInit {
           if (!this.newDependency[release.id]) {
             this.newDependency[release.id] = {
               project: '',
-              release: '',
+              version: '',
               dependencyReleaseId: '',
             };
           }
@@ -55,7 +55,7 @@ export class ProductReleasesComponent implements OnInit {
   addDependency(projectId: string, releaseId: string) {
     const newDep = this.newDependency[releaseId];
     if (newDep && newDep.project && newDep.dependencyReleaseId) {
-      newDep.release =
+      newDep.version =
         this.products[newDep.project]?.find(
           (release) => release.id === newDep.dependencyReleaseId
         )?.name || '';
@@ -76,7 +76,7 @@ export class ProductReleasesComponent implements OnInit {
           // Reset the form
           this.newDependency[releaseId] = {
             project: '',
-            release: '',
+            version: '',
             dependencyReleaseId: '',
           };
         });
@@ -99,7 +99,7 @@ export class ProductReleasesComponent implements OnInit {
     const updatedDeps = currentDeps.filter(
       (dep) =>
         dep.project !== dependencyToRemove.project ||
-        dep.release !== dependencyToRemove.release
+        dep.version !== dependencyToRemove.version
     );
     console.log('Updated dependencies after removal:', updatedDeps);
 

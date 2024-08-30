@@ -14,7 +14,7 @@
           <h4>Dependencies:</h4>
           <ul *ngIf="dependencies[projectId] && dependencies[projectId][release.id]">
             <li *ngFor="let dep of dependencies[projectId][release.id]">
-              {{ dep.project }} - {{ dep.release }}
+              {{ dep.project }} - {{ dep.version }}
               <button (click)="removeDependency(projectId, release.id, dep)" class="remove-dependency-btn">❌</button>
             </li>
           </ul>
