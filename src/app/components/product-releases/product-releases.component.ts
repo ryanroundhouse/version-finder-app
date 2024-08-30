@@ -32,7 +32,11 @@ export class ProductReleasesComponent implements OnInit {
         // Initialize newDependency for each release
         releases.forEach((release) => {
           if (!this.newDependency[release.id]) {
-            this.newDependency[release.id] = { project: '', release: '' };
+            this.newDependency[release.id] = {
+              project: '',
+              release: '',
+              dependencyReleaseId: '',
+            };
           }
         });
         console.log(`Releases for ${projectId}:`, releases);
@@ -50,7 +54,11 @@ export class ProductReleasesComponent implements OnInit {
 
   addDependency(projectId: string, releaseId: string) {
     const newDep = this.newDependency[releaseId];
-    if (newDep && newDep.project && newDep.release) {
+    if (newDep && newDep.project && newDep.dependencyReleaseId) {
+      newDep.release =
+        this.products[newDep.project]?.find(
+          (release) => release.id === newDep.dependencyReleaseId
+        )?.name || '';
       const currentDeps = this.dependencies[projectId][releaseId] || [];
       const updatedDeps = [...currentDeps, newDep];
 
@@ -65,9 +73,12 @@ export class ProductReleasesComponent implements OnInit {
             this.dependencies[projectId][releaseId] = [];
           }
           this.dependencies[projectId][releaseId] = updatedDeps;
-
           // Reset the form
-          this.newDependency[releaseId] = { project: '', release: '' };
+          this.newDependency[releaseId] = {
+            project: '',
+            release: '',
+            dependencyReleaseId: '',
+          };
         });
     }
   }

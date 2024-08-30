@@ -34,9 +34,9 @@
             </div>
             <div class="form-group">
               <label for="release">Release:</label>
-              <select id="release" [(ngModel)]="newDependency[release.id].release" name="release" required>
+              <select id="release" [(ngModel)]="newDependency[release.id].dependencyReleaseId" name="release" required>
                 <option value="">Select a release</option>
-                <option *ngFor="let rel of products[newDependency[release.id].project]" [value]="rel.name">{{ rel.name }}</option>
+                <option *ngFor="let rel of products[newDependency[release.id].project]" [value]="rel.id">{{ rel.name }}</option>
               </select>
             </div>
             <div class="form-group">
