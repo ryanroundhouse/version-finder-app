@@ -1,0 +1,26 @@
+<details>
+    <summary>{{ release.name }}</summary>
+    <p>{{ release.description }}</p>
+    <p>Release Date: {{ release.releaseDate | date }}</p>
+    <h4>Dependencies:</h4>
+    <ul>
+        <li *ngFor="let dependency of dependencies">
+            <strong>{{ dependency.project }}</strong> - <i>{{ dependency.version }}</i>
+            <button (click)="removeDependency(dependency)">❌</button>
+        </li>
+    </ul>
+    <p *ngIf="dependencies.length === 0">No dependencies for this release.</p>
+
+    <form (ngSubmit)="addDependency()">
+        <label for="productSelect">Add Dependency:</label>
+        <select id="productSelect" [(ngModel)]="selectedProduct" name="selectedProduct" (change)="onProductSelect()">
+            <option value="">Select a product</option>
+            <option *ngFor="let product of products" [value]="product">{{ product }}</option>
+        </select>
+        <select *ngIf="selectedProduct" id="releaseSelect" [(ngModel)]="selectedRelease" name="selectedRelease">
+            <option value="">Select a release</option>
+            <option *ngFor="let release of productReleases" [value]="release.id">{{ release.name }}</option>
+        </select>
+        <button type="submit" [disabled]="!selectedProduct || !selectedRelease">Add</button>
+    </form>
+</details>

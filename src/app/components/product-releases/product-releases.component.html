@@ -1,50 +1,11 @@
-<div *ngFor="let projectId of projectIds" class="project-container">
-  <h2>{{ projectId }}</h2>
-  
-  <details>
-    <div *ngFor="let release of products[projectId]" class="release-container">
-      <details>
-        <summary>Release: {{ release?.name }}</summary>
-        <p>Start Date: {{ release?.startDate | date }}</p>
-        <p>Release Date: {{ release?.releaseDate | date }}</p>
-        <p>Description: {{ release?.description }}</p>
-        
-        <!-- New section for dependencies -->
-        <div class="dependencies-container">
-          <h4>Dependencies:</h4>
-          <ul *ngIf="dependencies[projectId] && dependencies[projectId][release.id]">
-            <li *ngFor="let dep of dependencies[projectId][release.id]">
-              {{ dep.project }} - {{ dep.version }}
-              <button (click)="removeDependency(projectId, release.id, dep)" class="remove-dependency-btn">❌</button>
-            </li>
-          </ul>
-          <p *ngIf="!dependencies[projectId] || !dependencies[projectId][release.id]">No dependencies</p>
-        </div>
-
-        <!-- Add dependency form -->
-        <div class="add-dependency-form">
-          <h4>Add Dependency</h4>
-          <form (ngSubmit)="addDependency(projectId, release.id)" class="horizontal-form">
-            <div class="form-group">
-              <label for="project">Project:</label>
-              <select id="project" [(ngModel)]="newDependency[release.id].project" name="project" required>
-                <option value="" disabled selected>Select a project</option>
-                <option *ngFor="let proj of projectIds" [value]="proj">{{ proj }}</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="release">Release:</label>
-              <select id="release" [(ngModel)]="newDependency[release.id].dependencyReleaseId" name="release" required>
-                <option value="">Select a release</option>
-                <option *ngFor="let rel of products[newDependency[release.id].project]" [value]="rel.id">{{ rel.name }}</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <button type="submit">Add Dependency</button>
-            </div>
-          </form>
-        </div>
-      </details>
-    </div>
-  </details>
+<div *ngFor="let product of products" class="product-panel">
+  <h2>{{ product }} Releases</h2>
+  <input type="text" [placeholder]="'Filter ' + product + ' releases'" [(ngModel)]="filterText[product]" (input)="filterReleases(product)">
+  <div *ngIf="productReleases[product]">
+    <app-release-item *ngFor="let release of filteredReleases[product]" [product]="product" [products]="products" [release]="release" class="release-item">
+    </app-release-item>
+  </div>
+  <div *ngIf="!productReleases[product]">
+    Loading releases...
+  </div>
 </div>

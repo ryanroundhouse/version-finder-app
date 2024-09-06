@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { switchMap, map } from 'rxjs/operators';
 import { Release } from '../models/release';
 import { Dependency, Dependencies } from '../models/dependency';
 
@@ -22,14 +23,62 @@ export class ReleaseService {
     );
   }
 
-  addDependencies(
+  getDependenciesByRelease(
+    projectId: string,
+    releaseId: string
+  ): Observable<Dependency[]> {
+    return this.getDependencies(projectId).pipe(
+      map((dependencies) => dependencies[releaseId] || [])
+    );
+  }
+
+  addDependency(
     projectId: string,
     releaseId: string,
-    dependencies: Dependency[]
+    dependency: Dependency
   ): Observable<Dependencies> {
-    return this.http.post<Dependencies>(
-      `${this.apiUrl}/dependencies/${projectId}/${releaseId}`,
-      { dependencies }
+    return this.getDependencies(projectId).pipe(
+      switchMap((dependencies) => {
+        const releaseDependencies = dependencies[releaseId] || [];
+        if (
+          !releaseDependencies.some(
+            (dep) =>
+              dep.project === dependency.project &&
+              dep.version === dependency.version
+          )
+        ) {
+          releaseDependencies.push(dependency);
+          return this.http.post<Dependencies>(
+            `${this.apiUrl}/dependencies/${projectId}/${releaseId}`,
+            { dependencies: releaseDependencies }
+          );
+        }
+        return this.getDependencies(projectId);
+      })
+    );
+  }
+
+  removeDependency(
+    projectId: string,
+    releaseId: string,
+    dependency: Dependency
+  ): Observable<Dependencies> {
+    return this.getDependencies(projectId).pipe(
+      switchMap((dependencies) => {
+        const releaseDependencies = dependencies[releaseId] || [];
+        const updatedDependencies = releaseDependencies.filter(
+          (dep) =>
+            dep.project !== dependency.project ||
+            dep.version !== dependency.version
+        );
+        if (updatedDependencies.length !== releaseDependencies.length) {
+          return this.http.post<Dependencies>(
+            `${this.apiUrl}/dependencies/${projectId}/${releaseId}`,
+            { dependencies: updatedDependencies }
+          );
+        }
+        return this.getDependencies(projectId);
+      })
     );
   }
 }
